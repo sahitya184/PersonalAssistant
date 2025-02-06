@@ -84,56 +84,78 @@ app.post("/webhook", async (req, res) => {
             return res.json({ fulfillmentText: reminderConfirmation });
         }
 
+        // Handle Get Weather Intent
         if (intent === "get.weather") {
             const city = req.body.queryResult.parameters["geo-city"];
+
+            if (!city) {
+                return res.json({ fulfillmentText: "Please provide a valid city name for weather information." });
+            }
+
             const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${OPENWEATHER_API_KEY}&units=metric`;
 
-            const response = await axiosInstance.get(url); // Use axios instance with timeout
-            const temp = response.data.main.temp;
-            const weatherMessage = `The temperature in ${city} is ${temp}°C. Would you like details?`;
+            try {
+                const response = await axiosInstance.get(url);
+                if (response.data && response.data.main) {
+                    const temp = response.data.main.temp;
+                    const weatherMessage = `The temperature in ${city} is ${temp}°C. Would you like details?`;
 
-            if (isTelegram) {
-                const telegramResponse = {
-                    method: "sendMessage",
-                    chat_id: chatId,
-                    text: weatherMessage,
-                    reply_markup: {
-                        inline_keyboard: [
-                            [{ text: "Yes", callback_data: "weather_details" }],
-                            [{ text: "No", callback_data: "no_thanks" }]
-                        ]
+                    if (isTelegram) {
+                        const telegramResponse = {
+                            method: "sendMessage",
+                            chat_id: chatId,
+                            text: weatherMessage,
+                            reply_markup: {
+                                inline_keyboard: [
+                                    [{ text: "Yes", callback_data: "weather_details" }],
+                                    [{ text: "No", callback_data: "no_thanks" }]
+                                ]
+                            }
+                        };
+                        return res.json({ fulfillmentMessages: [{ payload: { telegram: telegramResponse } }] });
                     }
-                };
-                return res.json({ fulfillmentMessages: [{ payload: { telegram: telegramResponse } }] });
-            }
 
-            return res.json({ fulfillmentText: weatherMessage });
+                    return res.json({ fulfillmentText: weatherMessage });
+                } else {
+                    throw new Error("Invalid weather data received");
+                }
+            } catch (error) {
+                console.error("Error fetching weather data:", error);
+                return res.json({ fulfillmentText: "An error occurred while fetching the weather. Please try again." });
+            }
         }
 
+        // Handle Get News Intent
         if (intent === "get.news") {
             const newsUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${NEWS_API_KEY}`;
-            const response = await axiosInstance.get(newsUrl); // Use axios instance with timeout
-            const headline = response.data.articles[0].title;
-            const newsMessage = `Here's the latest news: ${headline}. Want more?`;
+            try {
+                const response = await axiosInstance.get(newsUrl);
+                const headline = response.data.articles[0]?.title || "No headlines available at the moment.";
+                const newsMessage = `Here's the latest news: ${headline}. Want more?`;
 
-            if (isTelegram) {
-                const telegramResponse = {
-                    method: "sendMessage",
-                    chat_id: chatId,
-                    text: newsMessage,
-                    reply_markup: {
-                        inline_keyboard: [
-                            [{ text: "More News", callback_data: "more_news" }],
-                            [{ text: "No", callback_data: "stop" }]
-                        ]
-                    }
-                };
-                return res.json({ fulfillmentMessages: [{ payload: { telegram: telegramResponse } }] });
+                if (isTelegram) {
+                    const telegramResponse = {
+                        method: "sendMessage",
+                        chat_id: chatId,
+                        text: newsMessage,
+                        reply_markup: {
+                            inline_keyboard: [
+                                [{ text: "More News", callback_data: "more_news" }],
+                                [{ text: "No", callback_data: "stop" }]
+                            ]
+                        }
+                    };
+                    return res.json({ fulfillmentMessages: [{ payload: { telegram: telegramResponse } }] });
+                }
+
+                return res.json({ fulfillmentText: newsMessage });
+            } catch (error) {
+                console.error("Error fetching news:", error);
+                return res.json({ fulfillmentText: "An error occurred while fetching the news. Please try again." });
             }
-
-            return res.json({ fulfillmentText: newsMessage });
         }
 
+        // Handle Get Time & Date Intent
         if (intent === "get.time.date") {
             const now = new Date();
             const timeMessage = `The current time is ${now.toLocaleTimeString()} and today is ${now.toDateString()}.`;
@@ -149,20 +171,26 @@ app.post("/webhook", async (req, res) => {
             return res.json({ fulfillmentText: timeMessage });
         }
 
+        // Handle Tell Joke Intent
         if (intent === "tell.joke") {
             const jokeUrl = `https://v2.jokeapi.dev/joke/Any`;
-            const response = await axiosInstance.get(jokeUrl); // Use axios instance with timeout
-            const joke = response.data.joke || `${response.data.setup} - ${response.data.delivery}`;
+            try {
+                const response = await axiosInstance.get(jokeUrl);
+                const joke = response.data.joke || `${response.data.setup} - ${response.data.delivery}`;
 
-            if (isTelegram) {
-                await axiosInstance.post(`${TELEGRAM_API_URL}/sendMessage`, { // Use axios instance with timeout
-                    chat_id: chatId,
-                    text: joke
-                });
-                return res.sendStatus(200);
+                if (isTelegram) {
+                    await axiosInstance.post(`${TELEGRAM_API_URL}/sendMessage`, { // Use axios instance with timeout
+                        chat_id: chatId,
+                        text: joke
+                    });
+                    return res.sendStatus(200);
+                }
+
+                return res.json({ fulfillmentText: joke });
+            } catch (error) {
+                console.error("Error fetching joke:", error);
+                return res.json({ fulfillmentText: "An error occurred while fetching a joke. Please try again." });
             }
-
-            return res.json({ fulfillmentText: joke });
         }
 
         return res.json({ fulfillmentText: "I'm not sure how to help with that!" });
@@ -192,7 +220,7 @@ app.post("/telegramWebhook", async (req, res) => {
         // Example: Fetch another news headline dynamically
         try {
             const newsUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${NEWS_API_KEY}`;
-            const response = await axiosInstance.get(newsUrl); // Use axios instance with timeout
+            const response = await axiosInstance.get(newsUrl);
             const moreNews = response.data.articles[1]?.title || "No more news available.";
             responseText = `Here's another news update: ${moreNews}`;
         } catch (error) {
