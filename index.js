@@ -12,6 +12,7 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 
 const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
+console.log("OpenWeather API Key:", OPENWEATHER_API_KEY);
 const NEWS_API_KEY = process.env.NEWS_API_KEY;
 
 let reminders = {}; // Store reminders temporarily
@@ -87,6 +88,7 @@ app.post("/webhook", async (req, res) => {
         // Handle Get Weather Intent
         if (intent === "get.weather") {
             const city = req.body.queryResult.parameters["geo-city"];
+            console.log("City:", city);  // Log city parameter for debugging
 
             if (!city) {
                 return res.json({ fulfillmentText: "Please provide a valid city name for weather information." });
@@ -96,6 +98,8 @@ app.post("/webhook", async (req, res) => {
 
             try {
                 const response = await axiosInstance.get(url);
+                console.log("Weather API Response Data:", response.data);  // Log the entire API response data
+
                 if (response.data && response.data.main) {
                     const temp = response.data.main.temp;
                     const weatherMessage = `The temperature in ${city} is ${temp}°C. Would you like details?`;
@@ -117,10 +121,11 @@ app.post("/webhook", async (req, res) => {
 
                     return res.json({ fulfillmentText: weatherMessage });
                 } else {
-                    throw new Error("Invalid weather data received");
+                    console.error("Invalid weather data received:", response.data);
+                    return res.json({ fulfillmentText: "An error occurred while fetching the weather. Please try again." });
                 }
             } catch (error) {
-                console.error("Error fetching weather data:", error);
+                console.error("Error fetching weather data:", error.response ? error.response.data : error.message);
                 return res.json({ fulfillmentText: "An error occurred while fetching the weather. Please try again." });
             }
         }
@@ -229,24 +234,14 @@ app.post("/telegramWebhook", async (req, res) => {
         }
     } 
     else if (callbackData === "no_thanks" || callbackData === "stop") {
-        responseText = "Alright! Let me know if you need anything else.";
+        responseText = "Okay! Let me know if you need anything else!";
     }
 
-    // Send response to Telegram
-    try {
-        await axiosInstance.post(`${TELEGRAM_API_URL}/sendMessage`, { // Use axios instance with timeout
-            chat_id: chatId,
-            text: responseText
-        });
-        return res.sendStatus(200);
-    } catch (error) {
-        console.error("Error sending Telegram message:", error);
-        return res.sendStatus(500);
-    }
+    await axiosInstance.post(`${TELEGRAM_API_URL}/sendMessage`, { chat_id: chatId, text: responseText });
+    return res.sendStatus(200);
 });
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+const port = process.env.PORT || 5000;
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });
