@@ -1,7 +1,6 @@
 const express = require("express");
 const axios = require("axios");
 const bodyParser = require("body-parser");
-const moment = require("moment");
 require("dotenv").config();  // Load environment variables
 
 const app = express();
@@ -13,9 +12,6 @@ const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 
 const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
 console.log("OpenWeather API Key:", OPENWEATHER_API_KEY);
-const NEWS_API_KEY = process.env.NEWS_API_KEY;
-
-let reminders = {}; // Store reminders temporarily
 
 // Timeout configuration for axios requests
 const axiosInstance = axios.create({
@@ -34,10 +30,9 @@ app.post("/webhook", async (req, res) => {
             const welcomeMessage = `Hello! 👋 I'm your Personal Assistant. How can I help you today? 😊\n\n` +
                 `I can assist you with the following tasks:\n` +
                 `- 🌤️ Check the weather\n` +
-                `- 📰 Get the latest news\n` +
                 `- 🤣 Tell you a joke\n` +
-                `- ⏰ Set reminders\n` +
-                `- 📅 Tell you the current date and time\n\n` +
+                `- 📖 Get a Word of the Day\n` +
+                `- 🎓 Learn a Fun Fact\n\n` +
                 `Just tap any of the options below, and I'll get started! 💬`;
 
             if (isTelegram) {
@@ -48,10 +43,9 @@ app.post("/webhook", async (req, res) => {
                     reply_markup: {
                         inline_keyboard: [
                             [{ text: "Check Weather 🌤️", callback_data: "check_weather" }],
-                            [{ text: "Get News 📰", callback_data: "get_news" }],
                             [{ text: "Tell a Joke 🤣", callback_data: "tell_joke" }],
-                            [{ text: "Set a Reminder ⏰", callback_data: "set_reminder" }],
-                            [{ text: "Current Date & Time 📅", callback_data: "get_time_date" }]
+                            [{ text: "Word of the Day 📖", callback_data: "word_of_the_day" }],
+                            [{ text: "Fun Fact 🎓", callback_data: "fun_fact" }]
                         ]
                     }
                 };
@@ -59,30 +53,6 @@ app.post("/webhook", async (req, res) => {
             }
 
             return res.json({ fulfillmentText: welcomeMessage });
-        }
-
-        // Handle Set Reminder Intent
-        if (intent === "set.reminder") {
-            const reminderTime = req.body.queryResult.parameters["date-time"];
-            const reminderMessage = req.body.queryResult.parameters["reminder-message"];
-            
-            // Store the reminder
-            const reminderId = `${chatId}-${moment(reminderTime).format("YYYYMMDDHHmm")}`;
-            reminders[reminderId] = { time: reminderTime, message: reminderMessage, chatId };
-
-            // Acknowledge the reminder
-            const reminderConfirmation = `Reminder set for ${moment(reminderTime).format("MMMM Do YYYY, h:mm a")}: ${reminderMessage}`;
-
-            if (isTelegram) {
-                const telegramResponse = {
-                    method: "sendMessage",
-                    chat_id: chatId,
-                    text: reminderConfirmation
-                };
-                return res.json({ fulfillmentMessages: [{ payload: { telegram: telegramResponse } }] });
-            }
-
-            return res.json({ fulfillmentText: reminderConfirmation });
         }
 
         // Handle Get Weather Intent
@@ -130,22 +100,6 @@ app.post("/webhook", async (req, res) => {
             }
         }
 
-        // Handle Get Time & Date Intent
-        if (intent === "get.time.date") {
-            const now = new Date();
-            const timeMessage = `The current time is ${now.toLocaleTimeString()} and today is ${now.toDateString()}.`;
-
-            if (isTelegram) {
-                await axiosInstance.post(`${TELEGRAM_API_URL}/sendMessage`, { // Use axios instance with timeout
-                    chat_id: chatId,
-                    text: timeMessage
-                });
-                return res.sendStatus(200);
-            }
-
-            return res.json({ fulfillmentText: timeMessage });
-        }
-
         // Handle Tell Joke Intent
         if (intent === "tell.joke") {
             const jokeUrl = `https://v2.jokeapi.dev/joke/Any`;
@@ -154,7 +108,7 @@ app.post("/webhook", async (req, res) => {
                 const joke = response.data.joke || `${response.data.setup} - ${response.data.delivery}`;
 
                 if (isTelegram) {
-                    await axiosInstance.post(`${TELEGRAM_API_URL}/sendMessage`, { // Use axios instance with timeout
+                    await axiosInstance.post(`${TELEGRAM_API_URL}/sendMessage`, { 
                         chat_id: chatId,
                         text: joke
                     });
@@ -168,6 +122,53 @@ app.post("/webhook", async (req, res) => {
             }
         }
 
+        // Handle Word of the Day Intent
+        if (intent === "word.of.the.day") {
+            const wordApiUrl = "https://random-word-api.herokuapp.com/word?number=1";
+            try {
+                const response = await axiosInstance.get(wordApiUrl);
+                const word = response.data[0];
+                const wordMessage = `📖 Word of the Day: *${word}*\n\nUse it in a sentence today! 😊`;
+
+                if (isTelegram) {
+                    await axiosInstance.post(`${TELEGRAM_API_URL}/sendMessage`, { 
+                        chat_id: chatId,
+                        text: wordMessage,
+                        parse_mode: "Markdown"
+                    });
+                    return res.sendStatus(200);
+                }
+
+                return res.json({ fulfillmentText: wordMessage });
+            } catch (error) {
+                console.error("Error fetching word of the day:", error);
+                return res.json({ fulfillmentText: "Sorry, I couldn't fetch the word of the day. Try again later." });
+            }
+        }
+
+        // Handle Fun Fact Intent
+        if (intent === "fun.fact") {
+            const factApiUrl = "https://uselessfacts.jsph.pl/random.json?language=en";
+            try {
+                const response = await axiosInstance.get(factApiUrl);
+                const fact = response.data.text;
+                const factMessage = `🎓 Did you know?\n\n${fact}`;
+
+                if (isTelegram) {
+                    await axiosInstance.post(`${TELEGRAM_API_URL}/sendMessage`, { 
+                        chat_id: chatId,
+                        text: factMessage
+                    });
+                    return res.sendStatus(200);
+                }
+
+                return res.json({ fulfillmentText: factMessage });
+            } catch (error) {
+                console.error("Error fetching fun fact:", error);
+                return res.json({ fulfillmentText: "Oops! Couldn't fetch a fun fact. Try again later." });
+            }
+        }
+
         return res.json({ fulfillmentText: "I'm not sure how to help with that!" });
 
     } catch (error) {
@@ -175,7 +176,6 @@ app.post("/webhook", async (req, res) => {
         return res.json({ fulfillmentText: "An error occurred. Please try again." });
     }
 });
-
 
 // Handle Telegram Callback Queries
 app.post("/telegramWebhook", async (req, res) => {
@@ -190,30 +190,6 @@ app.post("/telegramWebhook", async (req, res) => {
     if (callbackData === "weather_details") {
         responseText = "Currently, I can only provide temperature. More details coming soon!";
     } 
-    else if (callbackData === "more_news") {
-        responseText = "Fetching more news...";
-        let newsUrl = `https://newsapi.org/v2/top-headlines?country=${userCountry}&apiKey=${NEWS_API_KEY}`;
-
-
-        try {
-            const userCountry = "IN";  // Change this based on your dynamic logic to get the country, e.g., from user profile or callback
-
-            // If no valid news for the selected country, fallback to US
-            const response = await axiosInstance.get(newsUrl);
-
-             // Check if no news for the selected country, and fallback to US
-        if (response.data.totalResults === 0) {
-            newsUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${NEWS_API_KEY}`;
-            const fallbackResponse = await axiosInstance.get(newsUrl);
-            responseText = `No news found for India. Here's a news update from the US: ${fallbackResponse.data.articles[1]?.title || "No more news available."}`;
-        } else {
-            responseText = `Here's another news update: ${response.data.articles[1]?.title || "No more news available."}`;
-        }
-    } catch (error) {
-        console.error("Error fetching more news:", error);
-        responseText = "Sorry, I couldn't fetch more news.";
-    }
-}
     if (callbackData === "no_thanks" || callbackData === "stop") {
         responseText = "Okay! Let me know if you need anything else!";
     }
