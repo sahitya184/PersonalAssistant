@@ -76,7 +76,7 @@ app.post("/webhook", async (req, res) => {
 
                 if (response.data && response.data.main) {
                     const temp = response.data.main.temp;
-                    const weatherMessage = `The temperature in ${city} is ${temp}°C. Would you like details?`;
+                    const weatherMessage = `The temperature in ${city} is ${temp}°C.`;
 
                     if (isTelegram) {
                         const telegramResponse = {

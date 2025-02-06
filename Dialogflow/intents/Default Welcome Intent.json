@@ -1,0 +1,80 @@
+{
+  "id": "4b199ddb-bf31-442b-a52f-7f05a78992cb",
+  "name": "Default Welcome Intent",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "input.welcome",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "4",
+          "platform": "telegram",
+          "title": "",
+          "payload": {
+            "telegram": {
+              "reply_markup": {
+                "inline_keyboard": [
+                  [
+                    {
+                      "callback_data": "check_weather",
+                      "text": "Check Weather 🌤️"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "🧠 Give you the Word of the Day",
+                      "callback_data": "word.of.the.day"
+                    }
+                  ],
+                  [
+                    {
+                      "callback_data": "tell_joke",
+                      "text": "Tell a Joke 🤣"
+                    }
+                  ],
+                  [
+                    {
+                      "text": "🎭 Share a Fun Fact",
+                      "callback_data": "fun.fact"
+                    }
+                  ]
+                ]
+              },
+              "text": "Hello! 👋 I\u0027m your Personal Assistant bot! How can I assist you today? 😊\n\nI can help you with:\n- 🌤️ Checking the weather\n- 🧠 Give you the Word of the Day  \n- 🤣 Telling jokes to lighten the mood\n- 🎭 Share a Fun Fact \n\nJust type your request, and I\u0027ll take care of the rest! 💬"
+            }
+          },
+          "textToSpeech": "",
+          "lang": "en",
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "Hello! 👋 I\u0027m your Personal Assistant. Here\u0027s what I can do for you:  \n- 🌤️ Check the weather  \n- 🤣 Tell you a joke  \n- 🧠 Give you the Word of the Day  \n- 🎭 Share a Fun Fact  \n\nJust type in what you need or tap an option below!"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [
+    {
+      "name": "WELCOME"
+    }
+  ],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

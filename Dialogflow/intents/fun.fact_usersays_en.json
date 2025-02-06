@@ -1,0 +1,80 @@
+[
+  {
+    "id": "618667c6-b8c8-48b9-9a64-c9dc213eb59f",
+    "data": [
+      {
+        "text": "i want to hear some fun facts from you",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "0cd1e725-438d-4f0a-a2be-3174e9176fe4",
+    "data": [
+      {
+        "text": "get a fun fact instantly",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "31cbff23-0053-48fe-8a56-49746e51a069",
+    "data": [
+      {
+        "text": "Surprise me with a fact",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "844014fd-ed75-48c2-99d2-e6927d7d72f7",
+    "data": [
+      {
+        "text": "I want to hear a random fact",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "7fbd5cff-ddff-4777-9a0a-452162bbc347",
+    "data": [
+      {
+        "text": "Give me an interesting fact",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "65614cf9-bc69-40f4-81ff-8ea14fc449e6",
+    "data": [
+      {
+        "text": "Tell me a fun fact",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

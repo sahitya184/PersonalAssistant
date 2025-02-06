@@ -1,0 +1,67 @@
+[
+  {
+    "id": "6714f764-77fa-4b28-a511-0ebe41131186",
+    "data": [
+      {
+        "text": "i need to learn a new word for the day",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "e254ce71-88b3-4e3c-907f-4072acfd6877",
+    "data": [
+      {
+        "text": "I want to learn a new word",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "5e887e2c-e5dc-4f4e-9028-920fae3cf5be",
+    "data": [
+      {
+        "text": "Tell me a random word",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "e6912d98-7a54-480f-b25d-2ed17510e388",
+    "data": [
+      {
+        "text": "What\u0027s the word of the day?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "75e83e7f-17b4-4221-9b76-5efd11ce0927",
+    "data": [
+      {
+        "text": "Give me the word of the day",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

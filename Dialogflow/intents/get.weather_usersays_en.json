@@ -1,0 +1,127 @@
+[
+  {
+    "id": "78c08127-acef-4dda-a1d4-6c0a2d9eaf12",
+    "data": [
+      {
+        "text": "Show me ",
+        "userDefined": false
+      },
+      {
+        "text": "today",
+        "meta": "@sys.date",
+        "alias": "date",
+        "userDefined": false
+      },
+      {
+        "text": "\u0027s weather in ",
+        "userDefined": false
+      },
+      {
+        "text": "Mumbai",
+        "meta": "@sys.geo-city",
+        "alias": "geo-city",
+        "userDefined": false
+      },
+      {
+        "text": ".",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "d8ace40b-ec89-4c7e-803c-0962b1b7daa2",
+    "data": [
+      {
+        "text": "How\u0027s the weather in ",
+        "userDefined": false
+      },
+      {
+        "text": "New York",
+        "meta": "@sys.geo-city",
+        "alias": "geo-city",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "95b02cb5-7e6c-4dd8-8dfc-1bbfa8ccdf3c",
+    "data": [
+      {
+        "text": "Give me the weather report for ",
+        "userDefined": false
+      },
+      {
+        "text": "London",
+        "meta": "@sys.geo-city",
+        "alias": "geo-city",
+        "userDefined": false
+      },
+      {
+        "text": ".",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "24ffdd87-3d50-4011-bef5-c6d8c74dfa85",
+    "data": [
+      {
+        "text": "Will it rain ",
+        "userDefined": false
+      },
+      {
+        "text": "tomorrow",
+        "meta": "@sys.date",
+        "alias": "date",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "86737b33-2d72-4a11-958e-a271dcbb5bd5",
+    "data": [
+      {
+        "text": "What\u0027s the weather like ",
+        "userDefined": false
+      },
+      {
+        "text": "today",
+        "meta": "@sys.date",
+        "alias": "date",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

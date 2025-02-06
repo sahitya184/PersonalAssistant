@@ -1,0 +1,67 @@
+[
+  {
+    "id": "d6c0180a-68d9-485f-9dc6-ac9b132d8b24",
+    "data": [
+      {
+        "text": "I need a good laugh!",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "598830d1-80b2-45e4-9089-b3602d79331d",
+    "data": [
+      {
+        "text": "Crack a joke for me.",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "71d0c7f7-12e1-4c45-986f-501cf434dbe7",
+    "data": [
+      {
+        "text": "Do you know any funny jokes?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "1c5c1a74-af4b-4550-a0e0-0eb69caaa940",
+    "data": [
+      {
+        "text": "Make me laugh!",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "83b1d34c-d808-4c7f-93a5-fdae474a8ca6",
+    "data": [
+      {
+        "text": "Tell me a joke.",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]
