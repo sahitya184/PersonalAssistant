@@ -2,14 +2,24 @@ const express = require("express");
 const axios = require("axios");
 const bodyParser = require("body-parser");
 const moment = require("moment");
+require("dotenv").config();  // Load environment variables
 
 const app = express();
 app.use(bodyParser.json());
 
-const TELEGRAM_BOT_TOKEN = "8122699624:AAGzbcxSFlNLkhXjXDHet3o4bZPl-TZyH-Y";
+// Load sensitive data from .env
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 
+const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
+const NEWS_API_KEY = process.env.NEWS_API_KEY;
+
 let reminders = {}; // Store reminders temporarily
+
+// Timeout configuration for axios requests
+const axiosInstance = axios.create({
+  timeout: 5000, // Set timeout of 5 seconds for requests
+});
 
 // Handle Dialogflow Requests
 app.post("/webhook", async (req, res) => {
@@ -76,10 +86,9 @@ app.post("/webhook", async (req, res) => {
 
         if (intent === "get.weather") {
             const city = req.body.queryResult.parameters["geo-city"];
-            const apiKey = "092786ef252fe1d086bc770359983b5d";
-            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${OPENWEATHER_API_KEY}&units=metric`;
 
-            const response = await axios.get(url);
+            const response = await axiosInstance.get(url); // Use axios instance with timeout
             const temp = response.data.main.temp;
             const weatherMessage = `The temperature in ${city} is ${temp}°C. Would you like details?`;
 
@@ -102,8 +111,8 @@ app.post("/webhook", async (req, res) => {
         }
 
         if (intent === "get.news") {
-            const newsUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=119403342e7749d4a381da4ccfbe2dc1`;
-            const response = await axios.get(newsUrl);
+            const newsUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${NEWS_API_KEY}`;
+            const response = await axiosInstance.get(newsUrl); // Use axios instance with timeout
             const headline = response.data.articles[0].title;
             const newsMessage = `Here's the latest news: ${headline}. Want more?`;
 
@@ -130,7 +139,7 @@ app.post("/webhook", async (req, res) => {
             const timeMessage = `The current time is ${now.toLocaleTimeString()} and today is ${now.toDateString()}.`;
 
             if (isTelegram) {
-                await axios.post(`${TELEGRAM_API_URL}/sendMessage`, {
+                await axiosInstance.post(`${TELEGRAM_API_URL}/sendMessage`, { // Use axios instance with timeout
                     chat_id: chatId,
                     text: timeMessage
                 });
@@ -142,11 +151,11 @@ app.post("/webhook", async (req, res) => {
 
         if (intent === "tell.joke") {
             const jokeUrl = `https://v2.jokeapi.dev/joke/Any`;
-            const response = await axios.get(jokeUrl);
+            const response = await axiosInstance.get(jokeUrl); // Use axios instance with timeout
             const joke = response.data.joke || `${response.data.setup} - ${response.data.delivery}`;
 
             if (isTelegram) {
-                await axios.post(`${TELEGRAM_API_URL}/sendMessage`, {
+                await axiosInstance.post(`${TELEGRAM_API_URL}/sendMessage`, { // Use axios instance with timeout
                     chat_id: chatId,
                     text: joke
                 });
@@ -182,8 +191,8 @@ app.post("/telegramWebhook", async (req, res) => {
 
         // Example: Fetch another news headline dynamically
         try {
-            const newsUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=119403342e7749d4a381da4ccfbe2dc1`;
-            const response = await axios.get(newsUrl);
+            const newsUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${NEWS_API_KEY}`;
+            const response = await axiosInstance.get(newsUrl); // Use axios instance with timeout
             const moreNews = response.data.articles[1]?.title || "No more news available.";
             responseText = `Here's another news update: ${moreNews}`;
         } catch (error) {
@@ -195,33 +204,21 @@ app.post("/telegramWebhook", async (req, res) => {
         responseText = "Alright! Let me know if you need anything else.";
     }
 
-    // Send response back to Telegram
-    await axios.post(`${TELEGRAM_API_URL}/sendMessage`, {
-        chat_id: chatId,
-        text: responseText
-    });
-
-    res.sendStatus(200);
+    // Send response to Telegram
+    try {
+        await axiosInstance.post(`${TELEGRAM_API_URL}/sendMessage`, { // Use axios instance with timeout
+            chat_id: chatId,
+            text: responseText
+        });
+        return res.sendStatus(200);
+    } catch (error) {
+        console.error("Error sending Telegram message:", error);
+        return res.sendStatus(500);
+    }
 });
 
-// Reminder Handler (send reminder when it's time)
-setInterval(() => {
-    const now = moment().format("YYYYMMDDHHmm");
-
-    for (let reminderId in reminders) {
-        const reminder = reminders[reminderId];
-
-        if (moment(reminder.time).format("YYYYMMDDHHmm") === now) {
-            axios.post(`${TELEGRAM_API_URL}/sendMessage`, {
-                chat_id: reminder.chatId,
-                text: `⏰ Reminder: ${reminder.message}`
-            });
-
-            // Remove the reminder once sent
-            delete reminders[reminderId];
-        }
-    }
-}, 60000); // Check every minute
-
+// Start the server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
