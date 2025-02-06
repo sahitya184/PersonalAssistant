@@ -155,18 +155,29 @@ app.post("/telegramWebhook", async (req, res) => {
     } 
     else if (callbackData === "more_news") {
         responseText = "Fetching more news...";
+        let newsUrl = `https://newsapi.org/v2/top-headlines?country=${userCountry}&apiKey=${NEWS_API_KEY}`;
+
 
         try {
-            const newsUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${NEWS_API_KEY}`;
+            const userCountry = "IN";  // Change this based on your dynamic logic to get the country, e.g., from user profile or callback
+
+            // If no valid news for the selected country, fallback to US
             const response = await axiosInstance.get(newsUrl);
-            const moreNews = response.data.articles[1]?.title || "No more news available.";
-            responseText = `Here's another news update: ${moreNews}`;
-        } catch (error) {
-            console.error("Error fetching more news:", error);
-            responseText = "Sorry, I couldn't fetch more news.";
+
+             // Check if no news for the selected country, and fallback to US
+        if (response.data.totalResults === 0) {
+            newsUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${NEWS_API_KEY}`;
+            const fallbackResponse = await axiosInstance.get(newsUrl);
+            responseText = `No news found for India. Here's a news update from the US: ${fallbackResponse.data.articles[1]?.title || "No more news available."}`;
+        } else {
+            responseText = `Here's another news update: ${response.data.articles[1]?.title || "No more news available."}`;
         }
-    } 
-    else if (callbackData === "no_thanks" || callbackData === "stop") {
+    } catch (error) {
+        console.error("Error fetching more news:", error);
+        responseText = "Sorry, I couldn't fetch more news.";
+    }
+}
+    if (callbackData === "no_thanks" || callbackData === "stop") {
         responseText = "Okay! Let me know if you need anything else!";
     }
 
