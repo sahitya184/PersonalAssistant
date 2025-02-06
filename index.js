@@ -1,6 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const bodyParser = require("body-parser");
+const moment = require("moment");
 require("dotenv").config();  // Load environment variables
 
 const app = express();
@@ -12,6 +13,7 @@ const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 
 const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
 console.log("OpenWeather API Key:", OPENWEATHER_API_KEY);
+const NEWS_API_KEY = process.env.NEWS_API_KEY;
 
 // Timeout configuration for axios requests
 const axiosInstance = axios.create({
@@ -35,6 +37,7 @@ app.post("/webhook", async (req, res) => {
                 `- 🎓 Learn a Fun Fact\n\n` +
                 `Just tap any of the options below, and I'll get started! 💬`;
 
+
             if (isTelegram) {
                 const telegramResponse = {
                     method: "sendMessage",
@@ -46,8 +49,8 @@ app.post("/webhook", async (req, res) => {
                             [{ text: "Tell a Joke 🤣", callback_data: "tell_joke" }],
                             [{ text: "Word of the Day 📖", callback_data: "word_of_the_day" }],
                             [{ text: "Fun Fact 🎓", callback_data: "fun_fact" }]
-                        ]
-                    }
+                        ]   
+                        }
                 };
                 return res.json({ fulfillmentMessages: [{ payload: { telegram: telegramResponse } }] });
             }
@@ -55,6 +58,7 @@ app.post("/webhook", async (req, res) => {
             return res.json({ fulfillmentText: welcomeMessage });
         }
 
+    
         // Handle Get Weather Intent
         if (intent === "get.weather") {
             const city = req.body.queryResult.parameters["geo-city"];
@@ -108,7 +112,7 @@ app.post("/webhook", async (req, res) => {
                 const joke = response.data.joke || `${response.data.setup} - ${response.data.delivery}`;
 
                 if (isTelegram) {
-                    await axiosInstance.post(`${TELEGRAM_API_URL}/sendMessage`, { 
+                    await axiosInstance.post(`${TELEGRAM_API_URL}/sendMessage`, { // Use axios instance with timeout
                         chat_id: chatId,
                         text: joke
                     });
@@ -176,6 +180,7 @@ app.post("/webhook", async (req, res) => {
         return res.json({ fulfillmentText: "An error occurred. Please try again." });
     }
 });
+
 
 // Handle Telegram Callback Queries
 app.post("/telegramWebhook", async (req, res) => {
