@@ -16,5 +16,11 @@
         agent-id="ced91ed3-8392-4cb1-87c7-8eacb9067c6"
         language-code="en">
     </df-messenger>
+    <script>
+    window.addEventListener('dfMessengerLoaded', function(event) {
+        const dfMessenger = document.querySelector('df-messenger');
+        dfMessenger.renderCustomText('Hello! How can I assist you today?');
+    });
+</script>
 </body>
 </html>
