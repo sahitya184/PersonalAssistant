@@ -22,7 +22,7 @@ Dialogflow ES for NLP and Intent Management
 Node.js & Express.js for webhook
 Axios for API requests
 OpenWeather API for weather data
-Telegram Bot API for Telegram integration
+
 
 **📂 Project Structure**
 
@@ -48,7 +48,7 @@ npm install
 
 Create a .env file in the root directory and add:
 
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+
 OPENWEATHER_API_KEY=your_openweather_api_key
 PORT=5000
 
@@ -70,5 +70,4 @@ Go to Dialogflow Console
 Open "Try it now" and type "What's the weather in New York?"
 Test via Telegram:
 
-Start your Telegram bot
-Type "/start" and select options
+
