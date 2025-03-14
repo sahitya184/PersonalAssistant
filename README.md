@@ -6,7 +6,7 @@ This is a Personal Assistant Chatbot built using Dialogflow ES and Node.js webho
 🤣 Jokes
 📖 Word of the Day
 🎓 Fun Facts
-The chatbot is integrated with Telegram and can also be tested on Dialogflow’s web demo.
+The chatbot can be tested on Dialogflow’s web demo.
 
 🚀 ** Features**
 
@@ -14,7 +14,6 @@ The chatbot is integrated with Telegram and can also be tested on Dialogflow’s
 ✅ Receive random jokes for entertainment 😂
 ✅ Learn a new word every day 📚
 ✅ Discover fun and interesting facts 🎓
-✅ Supports Telegram integration 📲
 
 🛠️ **Technologies Used**
 
